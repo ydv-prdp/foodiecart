@@ -1,4 +1,8 @@
 /** @type {import('next').NextConfig} */
-const nextConfig = {};
+const nextConfig = {
+    images:{
+        domains: ['foodie-cart.vercel.app', 'https://api.themoviedb.org/'],
+    },
+};
 
 export default nextConfig;
