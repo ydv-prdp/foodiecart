@@ -129,12 +129,40 @@ const GetUserCart=async(email)=>{
   const result=await request(HYGRAPH_URL,query)
   return result
 }
+const DisconnectRestroFromUserCartItem=async(id)=>{
+  const query=gql`
+  mutation DisconnectRestaurantFromCartItem {
+    updateUserCart(data: {restaurant: {disconnect: true}}, where: {id: "`+id+`"})
+    {
+      id
+    }
+    publishManyUserCarts(to: PUBLISHED) {
+      count
+    }
+  }
+  `
+  const result=await request(HYGRAPH_URL,query)
+  return result
+}
 
+const DeleteItemFromCart=async(id)=>{
+  const query=gql`
+  mutation DeleteCartItem {
+    deleteUserCart(where: {id: "`+id+`"}) {
+      id
+    }
+  }
+  `
+  const result=await request(HYGRAPH_URL,query)
+  return result
+}
 
 export default{
     GetCategory,
     GetBusinessList,
     GetBusinessDetails,
     AddToCart,
-    GetUserCart
+    GetUserCart,
+    DisconnectRestroFromUserCartItem,
+    DeleteItemFromCart
 }

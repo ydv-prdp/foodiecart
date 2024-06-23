@@ -1,14 +1,31 @@
+'use client'
 import { Button } from "@/components/ui/button"
 import { X } from "lucide-react"
 import Image from "next/image"
+import GlobalApi from "../_utils/GlobalApi"
+import { toast } from "sonner"
+import { useContext } from "react"
+import { CartUpdateContext } from "../_context/CartUpdateContext"
 
 const Cart = ({cart}) => {
+  const {updateCart,setUpdateCart} = useContext(CartUpdateContext)
     const calculateCartAmount=()=>{
         let total=0
         cart.forEach((item,index)=>{
             total=total+item.price;
         })
         return total.toFixed(2);
+    }
+    const removeItemFromCart=(id)=>{
+        GlobalApi.DisconnectRestroFromUserCartItem(id).then(res=>{
+            if(res){
+                GlobalApi.DeleteItemFromCart(id).then(res=>{
+                    console.log(res)
+                    toast('Item removed from the cart')
+                    setUpdateCart(!updateCart)
+                })
+            }
+        })
     }
   return (
     <div>
@@ -31,7 +48,10 @@ const Cart = ({cart}) => {
                    </div>
                    <h2 className="flex gap-2 font-bold items-center">
                     Rs. {item?.price}
-                    <X className="h-4 w-4 text-red-500"/>
+                    <X className="h-4 w-4 text-red-500 cursor-pointer"
+                        onClick={()=>removeItemFromCart(item.id)}
+
+                    />
                    </h2>
                 </div>
             ))}
