@@ -85,10 +85,56 @@ const GetBusinessDetails=async(businessSlug)=>{
     return result
 }
 
+const AddToCart=async(data)=>{
+  const query=gql`
+  mutation AddToCart {
+    createUserCart(
+      data: {email: "`+data?.email+`", 
+        price: `+data?.price+`, 
+        productDescription: "`+data?.description+`", 
+        productImage: "`+data?.productImage+`", 
+        productName: "`+data?.productName+`",
+        restaurant:{connect:{slug:"`+data?.restroSlug+`"}}}
+    ) {
+      id
+    }
+    publishManyUserCarts(to: PUBLISHED) {
+      count
+    }
+  }  
+  `
+  const result=await request(HYGRAPH_URL,query)
+  return result
+}
+
+const GetUserCart=async(email)=>{
+  const query=gql`
+  query GetUserCart {
+    userCarts(where: {email: "`+email+`"}) {
+      id
+      price
+      productDescription
+      productImage
+      productName
+      restaurant {
+        name
+        banner {
+          url
+        }
+        slug
+      }
+    }
+  }
+  `
+  const result=await request(HYGRAPH_URL,query)
+  return result
+}
 
 
 export default{
     GetCategory,
     GetBusinessList,
-    GetBusinessDetails
+    GetBusinessDetails,
+    AddToCart,
+    GetUserCart
 }
