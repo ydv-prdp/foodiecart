@@ -6,6 +6,13 @@ import Image from 'next/image'
 import React, {  useContext, useEffect, useState } from 'react'
 import { CartUpdateContext } from '../_context/CartUpdateContext'
 import GlobalApi from '../_utils/GlobalApi'
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover"
+import Cart from './Cart'
+
 
 
 export const Header = () => {
@@ -16,7 +23,7 @@ export const Header = () => {
     console.log("Execute me")
     console.log(user?.primaryEmailAddress?.emailAddress)
     user&&GetUserCart()
-  },[updateCart&&user])
+  },[updateCart||user])
 
   const GetUserCart=()=>{
     GlobalApi.GetUserCart(user?.primaryEmailAddress?.emailAddress).then(res=>{
@@ -35,12 +42,20 @@ export const Header = () => {
 
     {isSignedIn?
     <div className='flex gap-3 items-center'>
-      <div className='flex gap-2 items-center'>
-        <ShoppingCart/>
-        <label className='p-1 px-2 rounded-full bg-slate-200'>
-          {cart?.length}
-        </label>
-      </div>
+      <Popover>
+        <PopoverTrigger asChild>
+          <div className='flex gap-2 items-center cursor-pointer'>
+            <ShoppingCart/>
+            <label className='p-1 px-2 rounded-full bg-slate-200'>
+              {cart?.length}
+            </label>
+          </div>
+        </PopoverTrigger>
+        <PopoverContent className="w-full">
+          <Cart cart={cart}/>
+        </PopoverContent>
+      </Popover>
+
       <UserButton/>
     </div>
     :<div className='flex gap-5'>
