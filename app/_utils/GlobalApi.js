@@ -204,6 +204,50 @@ const AddNewReviews=async(data)=>{
   return result
 }
 
+const CreateNewOrder=async(data)=>{
+  console.log(data)
+  const query=gql`
+  mutation CreateNewOrder {
+    createOrder(
+      data: {email: "`+data.email+`", 
+        orderAmount: `+data.orderAmount+`, 
+        restaurantName: "`+data.restaurantName+`", 
+        userName: "`+data.userName+`", 
+        phone: "`+data.phone+`", 
+        zipcode: "`+data.zip+`", 
+        address: "`+data.address+`"}
+    ) {
+      id
+    }
+  }
+  
+  `
+  const result=await request(HYGRAPH_URL,query)
+  return result
+}
+
+const updateOrderToAddOrderItem=async(name,price,id,email)=>{
+  const query=gql`
+  mutation UpdateOrderWithDetail {
+    updateOrder(
+      data: {orderDetail: {create: {OrderItem: {data: {name: "`+name+`", price: `+price+`}}}}}
+      where: {id: "`+id+`"}
+    ) {
+      id
+    }
+    publishManyOrders(to: PUBLISHED) {
+      count
+    }
+      deleteManyUserCarts(where: {email: "`+email+`"}) {
+        count
+      }
+  }
+  
+  `
+  const result=await request(HYGRAPH_URL,query)
+  return result
+}
+
 export default{
     GetCategory,
     GetBusinessList,
@@ -213,7 +257,9 @@ export default{
     DisconnectRestroFromUserCartItem,
     DeleteItemFromCart,
     AddNewReviews,
-    getRestaurantReviews
+    getRestaurantReviews,
+    CreateNewOrder,
+    updateOrderToAddOrderItem
 }
 
 

@@ -4,10 +4,13 @@ import { X } from "lucide-react"
 import Image from "next/image"
 import GlobalApi from "../_utils/GlobalApi"
 import { toast } from "sonner"
-import { useContext } from "react"
+import { useContext, useState } from "react"
 import { CartUpdateContext } from "../_context/CartUpdateContext"
+import Link from "next/link"
+
 
 const Cart = ({cart}) => {
+ 
   const {updateCart,setUpdateCart} = useContext(CartUpdateContext)
     const calculateCartAmount=()=>{
         let total=0
@@ -27,6 +30,7 @@ const Cart = ({cart}) => {
             }
         })
     }
+    
   return (
     <div>
         <h2 className="text-lg font-bold">
@@ -55,7 +59,9 @@ const Cart = ({cart}) => {
                    </h2>
                 </div>
             ))}
-            <Button>Checkout Rs. {calculateCartAmount()}</Button>
+            <Link href={'/checkout?restaurant='+cart[0]?.restaurant?.name}>
+                <Button className="w-full">Checkout Rs. {calculateCartAmount()}</Button>
+            </Link>
         </div>
     </div>
   )
