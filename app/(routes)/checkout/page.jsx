@@ -4,8 +4,9 @@ import GlobalApi from "@/app/_utils/GlobalApi";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useUser } from "@clerk/nextjs";
+import { PayPalButtons } from "@paypal/react-paypal-js";
 import { Loader } from "lucide-react";
-import { useSearchParams } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import { useContext, useEffect, useState } from "react";
 import { toast } from "sonner";
 
@@ -25,6 +26,7 @@ const Checkout = () => {
     const [taxAmount, setTaxAmount]=useState(0)
     const [totalAmount,setTotalAmount]=useState(0)
     const [loading, setLoading]=useState(false)
+    const router = useRouter();
 
     useEffect(()=>{
         console.log(params.get('restaurant'))
@@ -65,6 +67,7 @@ const Checkout = () => {
                     setLoading(false)
                     toast('Order Created Successfully')
                     setUpdateCart(!updateCart)
+                    router.push('/confirmation')
                 },(error)=>{
                     setLoading(false)
                 })
@@ -74,6 +77,7 @@ const Checkout = () => {
             setLoading(false)
         })
     }
+   
   return (
     <div>
         <h2 className="font-bold text-2xl my-5">Checkout</h2>
@@ -101,9 +105,26 @@ const Checkout = () => {
                     <h2 className="font-bold flex justify-between">Tax (9%) : <span>{taxAmount.toFixed(2)}</span></h2>
                     <hr></hr>
                     <h2 className="font-bold flex justify-between">Total : <span>Rs. {totalAmount.toFixed(2)}</span></h2>
-                    <Button onClick={()=>addToOrder()}>
+                    {/* <Button onClick={()=>addToOrder()}>
                         {loading?<Loader className="animate-spin"/>:'Make Payment'}
-                    </Button>
+                    </Button> */}
+                    {totalAmount>500&& <PayPalButtons 
+                        disabled={!(userName&&email&&address&&zip) || loading}
+                        style={{layout:"horizontal"}}
+                        onApprove={addToOrder}   
+                        createOrder={(data,action)=>{
+                            return action.order.create({
+                                purchase_units:[
+                                    {
+                                        amount:{
+                                        value:totalAmount.toFixed(2),
+                                        currency_code:'USD'
+                                    }
+                                }
+                                ]
+                            })
+                        }} 
+                    />}
                 </div>
             </div>
 
