@@ -1,5 +1,6 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import MenuSection from "./MenuSection"
+import ReviewSection from "./ReviewSection"
 
 
 const TabsItem = ({restroInfo}) => {
@@ -14,7 +15,7 @@ const TabsItem = ({restroInfo}) => {
               <MenuSection restroInfo={restroInfo}/>
             </TabsContent>
             <TabsContent value="about">Change your password here.</TabsContent>
-            <TabsContent value="reviews">Change your reviews here.</TabsContent>
+            <TabsContent value="reviews"><ReviewSection restroInfo={restroInfo}/></TabsContent>
         </Tabs>
 
   )

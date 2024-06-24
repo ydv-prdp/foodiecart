@@ -36,6 +36,9 @@ const GetBusinessList=async(category)=>{
           restroType
           slug
           workingHours
+          reviews {
+            star
+          }
         }
       }
     `
@@ -76,6 +79,9 @@ const GetBusinessDetails=async(businessSlug)=>{
                 }
               }
             }
+          }
+          reviews{
+            star
           }
         }
       }
@@ -157,6 +163,47 @@ const DeleteItemFromCart=async(id)=>{
   return result
 }
 
+const getRestaurantReviews=async(slug)=>{
+  const query=gql`
+  query RestaurantReviews {
+    reviews(where: {restaurant: {slug: "`+slug+`"}},orderBy:publishedAt_DESC) {
+      id
+      profileImage
+      email
+      publishedAt
+      userName
+      star
+      reviewText
+    }
+  }
+  `
+  const result=await request(HYGRAPH_URL,query)
+  return result
+}
+
+const AddNewReviews=async(data)=>{
+  console.log(data);
+  const query=gql`
+  mutation AddNewReview {
+    createReview(
+      data: {email: "`+data.email+`", 
+        profileImage: "`+data.profileImage+`", 
+        reviewText: "`+data.reviewText+`", 
+        star: `+data.star+`, 
+        userName: "`+data.userName+`", 
+        restaurant: {connect: {slug: "`+data.slug+`"}}}
+    ) {
+      id
+    }
+    publishManyReviews(to: PUBLISHED) {
+      count
+    }
+  }
+  `
+  const result=await request(HYGRAPH_URL,query)
+  return result
+}
+
 export default{
     GetCategory,
     GetBusinessList,
@@ -164,5 +211,9 @@ export default{
     AddToCart,
     GetUserCart,
     DisconnectRestroFromUserCartItem,
-    DeleteItemFromCart
+    DeleteItemFromCart,
+    AddNewReviews,
+    getRestaurantReviews
 }
+
+
